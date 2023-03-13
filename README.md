@@ -1,7 +1,7 @@
 Utility for dumping ELF executables built with Go
 ===
 
-This is a simple tool for dumping out some of the information specific to Go from a ELF binary built with Go, such as pc/func data, function argument/local pointer map, etc.
+This is a simple tool for dumping out some of the information specific to Go from a ELF binary built with Go, such as pc/func data, function argument/local pointer map, etc. This is currently only tested for ELF binaries built with Go 1.19, it might not work for ELF binaries built with older or newer versions of Go.
 
 to build:
 
