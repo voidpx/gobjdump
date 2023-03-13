@@ -25,9 +25,9 @@ func printObject(out io.Writer, o any, level int, limit int) {
 	v := reflect.ValueOf(o)
 	switch t.Kind() {
 	case reflect.Uintptr, reflect.UnsafePointer:
-		fmt.Fprintf(out, "0x%x", *(*uintptr)(unsafe.Pointer(((*eface)(unsafe.Pointer(&o)).d))))
+		fmt.Fprintf(out, "%#x", *(*uintptr)(unsafe.Pointer(((*eface)(unsafe.Pointer(&o)).d))))
 	case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		fmt.Fprintf(out, "%d", o)
+		fmt.Fprintf(out, "%#x", o)
 	case reflect.Slice, reflect.String: // print the address of the backing storage
 		printObject(out, (*reflect.StringHeader)((*eface)(unsafe.Pointer(&o)).d).Data, level, limit)
 	case reflect.Pointer:
