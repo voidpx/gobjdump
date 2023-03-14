@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"unsafe"
 )
@@ -58,12 +59,22 @@ func (e *ELF_Info) findFunc(fn string) *_func {
 	return nil
 }
 
+func (e *ELF_Info) PrintPCLN(out io.Writer, fn string) {
+	e.printPCvalue(out, fn,
+		func(f *_func) uint32 {
+			return f.pcln
+		},
+		func(v int, f *_func) any {
+			return strconv.Itoa(v)
+		})
+}
+
 func (e *ELF_Info) PrintPCSP(out io.Writer, fn string) {
 	e.printPCvalue(out, fn,
 		func(f *_func) uint32 {
 			return f.pcsp
 		},
-		func(v int) any {
+		func(v int, f *_func) any {
 			return v
 		})
 }
@@ -250,12 +261,12 @@ func (e *ELF_Info) getpcvalue(fn string, of func(*_func) uint32) (*_func, []pcva
 }
 
 func (e *ELF_Info) printPCvalue(out io.Writer, fn string, of func(*_func) uint32,
-	vm func(int) any) {
+	vm func(int, *_func) any) {
 	f, pcv := e.getpcvalue(fn, of)
 	e.printFuncNameAndFile(out, f, fn)
 
 	for _, p := range pcv {
-		m := vm(p.value)
+		m := vm(p.value, f)
 		switch tv := m.(type) {
 		case uint8, uint16, uint32, uint64, int8, int16, int32, int64, int, uintptr:
 			fmt.Fprintf(out, "    %#x-->%#x: %#x\n", p.pc_start, p.pc_end, tv)
@@ -272,7 +283,7 @@ func (e *ELF_Info) PrintSafePoints(out io.Writer, fn string) {
 		func(f *_func) uint32 {
 			return *(*uint32)(unsafe.Pointer(uintptr(unsafe.Pointer(&f.nfuncdata)) + unsafe.Sizeof(f.nfuncdata))) // + _PCDATA_UnsafePoint*4
 		},
-		func(v int) any {
+		func(v int, f *_func) any {
 			switch v {
 			case _PCDATA_UnsafePointSafe:
 				return "safe"

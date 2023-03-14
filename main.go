@@ -11,11 +11,11 @@ func main() {
 	cmd := &cobra.Command{
 		Use:   "gobjdump <command> <file>",
 		Short: "ELF dumper for binaries built with Go",
-		Long: `gobjdump prints information specific to Go in the ELF file. e.g.
+		Long: `gobjdump prints information specific to Go in an ELF executable built with Go. e.g.
 * functions and files where they are defined
-* pcsp of functions
+* pcsp/pcln of functions
 * safe points of functions
-* local/argument pointer map`,
+* local/argument pointer map of functions`,
 	}
 
 	var function string
@@ -76,7 +76,7 @@ func main() {
 
 	cmdPrintPCSP := &cobra.Command{
 		Use:   "pcsp <file>",
-		Short: "print pcsp of a function",
+		Short: "print pc->sp of a function",
 		Args:  requireFile,
 		Run: func(cmd *cobra.Command, args []string) {
 			doElfFile(args[0], func(f *elf.ELF_Info) {
@@ -86,6 +86,19 @@ func main() {
 		},
 	}
 	functionRequried(cmdPrintPCSP)
+
+	cmdPrintPCLN := &cobra.Command{
+		Use:   "pcln <file>",
+		Short: "print pc->line No. of a function",
+		Args:  requireFile,
+		Run: func(cmd *cobra.Command, args []string) {
+			doElfFile(args[0], func(f *elf.ELF_Info) {
+				f.PrintPCLN(os.Stdout, function)
+			})
+
+		},
+	}
+	functionRequried(cmdPrintPCLN)
 
 	cmdPrintSafePoints := &cobra.Command{
 		Use:   "safe <file>",
@@ -144,6 +157,7 @@ func main() {
 	cmd.AddCommand(cmdPrintFuncs)
 	cmd.AddCommand(cmdPrintTypes)
 	cmd.AddCommand(cmdPrintPCSP)
+	cmd.AddCommand(cmdPrintPCLN)
 	cmd.AddCommand(cmdPrintSafePoints)
 	cmd.AddCommand(cmdPrintArgPointerMap)
 	cmd.AddCommand(cmdPrintLocalPointerMap)
