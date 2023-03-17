@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"unsafe"
@@ -83,14 +84,17 @@ func (e *ELF_Info) PrintTypes(out io.Writer) {
 	e.loadrodata()
 	e.loadpcln()
 	e.loadTypeLinks()
+	sort.Slice(e.module.typelinks, func(i, j int) bool {
+		return e.module.typelinks[i] < e.module.typelinks[j]
+	})
 	for _, o := range e.module.typelinks {
 		t := (*_type)(unsafe.Pointer(&e.rodata[o]))
-		e.printType(out, t)
+		e.printType(out, t, o)
 	}
 }
 
-func (e *ELF_Info) printType(out io.Writer, t *_type) {
-	fmt.Println(e.typeName(t))
+func (e *ELF_Info) printType(out io.Writer, t *_type, o int32) {
+	fmt.Fprintf(out, "%#x: %s\n", e.module.rodata+uintptr(o), e.typeName(t))
 }
 
 func (e *ELF_Info) typeName(t *_type) (s string) {

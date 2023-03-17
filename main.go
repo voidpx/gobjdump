@@ -65,7 +65,7 @@ func main() {
 
 	cmdPrintTypes := &cobra.Command{
 		Use:   "type <file>",
-		Short: "print types",
+		Short: "print types that appear in the .typelinks section",
 		Args:  requireFile,
 		Run: func(cmd *cobra.Command, args []string) {
 			doElfFile(args[0], func(f *elf.ELF_Info) {
