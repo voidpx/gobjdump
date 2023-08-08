@@ -1,4 +1,4 @@
-module github.com/sam-zheng/gobjdump
+module github.com/voidpx/gobjdump
 
 go 1.19
 
@@ -9,4 +9,4 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 )
 
-replace github.com/sam-zheng/gobjdump/elf => ./elf
+replace github.com/voidpx/gobjdump/elf => ./elf
