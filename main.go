@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/sam-zheng/gobjdump/elf"
+	"github.com/voidpx/gobjdump/elf"
 	"github.com/spf13/cobra"
 )
 
